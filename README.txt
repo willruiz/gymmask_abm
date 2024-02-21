@@ -1,3 +1,6 @@
+Empirical Fully-connected disease-avoidance simulation with damped chaotic outbreak behavior. 
+Converges to SIR Model
+
 Prcoess of project:
 
 Overview:
@@ -32,15 +35,5 @@ Assumptions:
 3. Covid cost parameters are independent
 4. Agents entering have fixed probability of having covid.
 
-
-1/30. Create class functions
- Next steps: Finish implementing payoff functions 
- and run payoff tests
-
- 4 Parameters to payoff of wearing a mask:
- 1. Mask cost ()
- 2. Protection benefit (b) 
- 3. Social pressure (n, b)
- 4. Covid risk present (,..,)
 
  
