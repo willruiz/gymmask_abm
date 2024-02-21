@@ -2,25 +2,30 @@ import numpy as np
 import random
 import matplotlib.pyplot as plt
 
-transmit_rate = 0.001 # Sick masked transmitter to masked target
-asymp_rate = transmit_rate/3
-mask_percentage = 1
+transmit_rate = 0.01 # Sick masked transmitter to masked target
+mp = 5
+asymp_rate = transmit_rate/10
 
-incub_duration = 5
-immune_duration = 40
-healthy_count = 300
+mask_percentage = 0.7
+
+incub_duration = 2
+asymp_duration = 1
+sick_duration = 3
+immune_duration = 10
+
+healthy_count = 50
 sick_count = 10
-timeend_set = 50
+timeend_set = 200
 
 spread_probablities = {
-  "SMM": transmit_rate,
-  "SMN": transmit_rate*1.2, # Sick masked -> Non masked
-  "SNM": transmit_rate*1.5,
-  "SNN": transmit_rate*2.5,
-  "AMM": asymp_rate,
-  "AMN": asymp_rate*1.2,
-  "ANM": asymp_rate*1.5,
-  "ANN": asymp_rate*2.5
+  "SMM": transmit_rate/mp,
+  "SMN": transmit_rate/(mp/2), # Sick masked -> Non masked
+  "SNM": transmit_rate/(mp/3),
+  "SNN": transmit_rate,
+  "AMM": asymp_rate/mp,
+  "AMN": asymp_rate/(mp/2),
+  "ANM": asymp_rate/(mp/3),
+  "ANN": asymp_rate
 }
 
 def char2str(s):
@@ -151,8 +156,8 @@ class agent:
 
         #self.incub.max  = 10
         self.incub.max  = incub_duration
-        self.asymp.max  = 2
-        self.sick.max   = 2
+        self.asymp.max  = asymp_duration
+        self.sick.max   = sick_duration
         #self.immune.max = 10
         self.immune.max = immune_duration
 
@@ -173,7 +178,7 @@ class agent:
         if mask_state == "N":
             return p_s + (p_m-0/5)**2
         else:
-            return 0.5 * p_s + self.mask_cost + (p_m-0/5)**4
+            return 0.1 * p_s + self.mask_cost + (p_m-0/5)**4
 
     def assess_room(self, room):
         self.num_agents = room.num_agents
@@ -203,7 +208,6 @@ class game:
         self.current_masks = []
         self.current_sick = []
         self.current_immune = []
-        self.current_susceptible = []
 
         self.avg_kernel = 30
         self.local_avg = []
@@ -331,7 +335,6 @@ class game:
         self.current_masks.append(self.room.num_mask)
         self.current_sick.append(self.room.num_sick)
         self.current_immune.append(self.room.num_immune)
-        self.current_susceptible.append(self.room.num_agents - self.room.num_immune)
 
         if (self.timestamp < self.avg_kernel):
             self.local_avg.append(sum(self.current_infected)/self.timestamp)
@@ -351,21 +354,16 @@ class game:
         y5 = self.current_masks
         y6 = self.current_sick
         y7 = self.current_immune
-        y8 = self.current_susceptible
 
         
         # plot lines
-        plt.plot(x, y1, label = "people_present", color = "tab:blue")
+        plt.plot(x, y1, label = "people_present")
         #plt.plot(x, y2, label = "new_infections")
-        plt.plot(x, y3, label = "current_infected", color = "tab:orange")
+        plt.plot(x, y3, label = "current_infected")
         #plt.plot(x, y4, label = "local_avg curr inf", color = "black")
-        #plt.plot(x, y5, label = "current_masks")
-        plt.plot(x, y6, label = "current_sick", color = "tab:red")
-        plt.plot(x, y7, label = "current_recovered", color = "tab:purple")
-        plt.plot(x, y8, label = "current_susceptible", color = "tab:cyan")
-        plt.legend(loc='upper right')
-        plt.xlabel('Time units')
-        plt.ylabel('Agents')
+        plt.plot(x, y5, label = "current_masks")
+        plt.plot(x, y6, label = "current_sick")
+        plt.plot(x, y7, label = "current_immune")
         plt.legend()
         plt.show()
         #self.current_masks.append()
